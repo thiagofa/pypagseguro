@@ -1,6 +1,6 @@
 from pagseguro import Pagseguro
 
-__author__ = 'Thaigo Avelino'
+__author__ = 'Visie'
 
 VERSION = (1, 0, 0)
 
