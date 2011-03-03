@@ -1,5 +1,4 @@
 *.pyc
-.*.swp
 *.egg
 docs/.build
 docs/_build
@@ -8,3 +7,4 @@ dist/
 *.egg-info/
 env/
 .pypirc
+*.swp
