@@ -302,6 +302,7 @@ class Pagseguro:
       - imgBotao  (default: 1 - Pode ser um dos cinco botões do Pagseguro ou url de imagem)
       - extra     (default: '' string que você pode adicionar ao fim do formulário de
                    abertura, pode ser usado para colocar uma id ou classe desejada)
+      - target    (default: 'pagseguro' - valor do atributo target do form gerado)
 
       Exemplo básico de uso:
 
@@ -348,7 +349,7 @@ class Pagseguro:
                                             # no construtor
       <PagseguroCart - mail:pagseguro@visie.com.br - 2 items>
       >>> carrinho.mostra(imprime=False) # pedindo para apenas retornar, assim é possível manipular a resposta
-      '<form action="https://pagseguro.uol.com.br/security/webpagamentos/webpagto.aspx" target="pagseguro" method="post">\\n<input type="hidden" name="item_frete_1" value="130" />\\n<input type="hidden" name="email_cobranca" value="pagseguro@visie.com.br" />\\n<input type="hidden" name="moeda" value="BRL" />\\n<input type="hidden" name="tipo" value="CP" />\\n<input type="hidden" name="item_peso_1" value="13" />\\n<input type="hidden" name="item_quant_1" value="3" />\\n<input type="hidden" name="item_id_1" value="1" />\\n<input type="hidden" name="item_descr_1" value="Um produto de exemplo" />\\n<input type="hidden" name="item_valor_1" value="1030" />\\n<input type="hidden" name="item_descr_2" value="Um produto de exemplo 2" />\\n<input type="hidden" name="item_quant_2" value="13" />\\n<input type="hidden" name="item_valor_2" value="1030" />\\n<input type="hidden" name="item_id_2" value="2" />\\n<input type="image" src="https://pagseguro.uol.com.br/Security/Imagens/btnComprarBR.jpg" name="submit" alt="Pague com PagSeguro - \\xc3\\xa9 r\\xc3\\xa1pido, gr\\xc3\\xa1tis e seguro!" />\\n</form>'
+      '<form action="https://pagseguro.uol.com.br/security/webpagamentos/webpagto.aspx" accept-charset="iso-8859-1" target="pagseguro" method="post">\\n<input type="hidden" name="item_frete_1" value="130" />\\n<input type="hidden" name="email_cobranca" value="pagseguro@visie.com.br" />\\n<input type="hidden" name="moeda" value="BRL" />\\n<input type="hidden" name="tipo" value="CP" />\\n<input type="hidden" name="item_peso_1" value="13" />\\n<input type="hidden" name="item_quant_1" value="3" />\\n<input type="hidden" name="item_id_1" value="1" />\\n<input type="hidden" name="item_descr_1" value="Um produto de exemplo" />\\n<input type="hidden" name="item_valor_1" value="1030" />\\n<input type="hidden" name="item_descr_2" value="Um produto de exemplo 2" />\\n<input type="hidden" name="item_quant_2" value="13" />\\n<input type="hidden" name="item_valor_2" value="1030" />\\n<input type="hidden" name="item_id_2" value="2" />\\n<input type="image" src="https://pagseguro.uol.com.br/Security/Imagens/btnComprarBR.jpg" name="submit" alt="Pague com PagSeguro - \\xc3\\xa9 r\\xc3\\xa1pido, gr\\xc3\\xa1tis e seguro!" />\\n</form>'
     """
     data = {
       'abre'      : True,
@@ -357,11 +358,18 @@ class Pagseguro:
       'botao'     : True,
       'imgBotao'  : 1,
       'extra'     : '',
+      'target'    : 'pagseguro',
     }
     data.update(kws)
     ret = []
     if data['abre']:
-      ret.append('<form action="https://pagseguro.uol.com.br/security/webpagamentos/webpagto.aspx" target="pagseguro" method="post"%s>' % ('extra' in data and data['extra']))
+        target = ''
+        extra = ''
+        if data['target']:
+            target = 'target="%s" ' % (data['target'],)
+        if data['extra']:
+            extra = ' ' + data['extra']
+        ret.append('<form action="https://pagseguro.uol.com.br/security/webpagamentos/webpagto.aspx" accept-charset="iso-8859-1" %smethod="post"%s>' % (target, extra,))
     
     input = '<input type="hidden" name="%s" value="%s" />'
     for k,v in self.data['setup'].iteritems():

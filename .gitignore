@@ -8,3 +8,7 @@ dist/
 env/
 .pypirc
 *.swp
+.DS_Store
+.project
+.pydevproject
+.settings
