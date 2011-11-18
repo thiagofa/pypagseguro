@@ -3,6 +3,9 @@ import urllib
 import time
 import re
 
+def str_to_float(value):
+    return float(value.replace('.','').replace(',','.'))
+
 def gravaLog(log, arquivo, mensagem):
   """
     Método auxiliar que grava as informações de log em um arquivo.
@@ -21,7 +24,7 @@ def gravaLog(log, arquivo, mensagem):
     except:
       print "LOG FAIL"
 
-def retorno (inputs, token, fn, log=True, logfile='/tmp/pagseguro.log'):
+def retorno (inputs, token, fn=None, log=True, logfile='/tmp/pagseguro.log'):
   """
     Método que faz a validação junto ao pagseguro para os posts recebidos
     Voce deve executá-lo, no método POST de sua aplicação passando os seguintes
@@ -35,7 +38,7 @@ def retorno (inputs, token, fn, log=True, logfile='/tmp/pagseguro.log'):
   """
   data = {}
   for name, value in inputs.iteritems():
-    data[name] = value
+    data[name] = value.encode('iso-8859-1')
   data['Comando'] = 'validar'
   data['Token']   = token
  
@@ -44,6 +47,7 @@ def retorno (inputs, token, fn, log=True, logfile='/tmp/pagseguro.log'):
   params = urllib.urlencode(data)
   ret = urllib.urlopen('https://pagseguro.uol.com.br/Security/NPI/Default.aspx', params)
   ret = ret.read()
+  
   # Manipulando o resultado
   produtos = {}
   s = re.compile(r'_\d+$')
@@ -60,17 +64,20 @@ def retorno (inputs, token, fn, log=True, logfile='/tmp/pagseguro.log'):
     try:
       prod.append({
         'id':         produtos['ProdID_'+str(i)],
-        'valor':      produtos['ProdValor_'+str(i)],
+        'valor':      str_to_float(produtos['ProdValor_'+str(i)]),
         'descricao':  produtos['ProdDescricao_'+str(i)],
-        'quantidade': produtos['ProdQuantidade_'+str(i)],
-        'extras':     produtos['ProdExtras_'+str(i)],
-        'frete':      produtos['ProdFrete_'+str(i)],
+        'quantidade': int(produtos['ProdQuantidade_'+str(i)]),
+        'extras':     str_to_float(produtos['ProdExtras_'+str(i)]),
+        'frete':      str_to_float(produtos['ProdFrete_'+str(i)]),
       })
     except:
       break
   data['produtos'] = prod
   if ret == 'VERIFICADO':
     gravaLog(log, logfile, 'Dados verificados junto ao pagseguro com sussesso! Executando a funcao. %s' % data)
-    fn(data)
+    if fn:
+        fn(data)
+    return data
   else:
     gravaLog(log, logfile, 'Dados inválidos: %s - Resposta %s' % (data, ret))
+    return {}
