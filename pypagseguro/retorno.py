@@ -2,9 +2,10 @@
 import urllib
 import time
 import re
+import decimal
 
-def str_to_float(value):
-    return float(value.replace('.','').replace(',','.'))
+def str_to_decimal(value):
+    return decimal.Decimal(value.replace('.','').replace(',','.'))
 
 def gravaLog(log, arquivo, mensagem):
   """
@@ -64,11 +65,11 @@ def retorno (inputs, token, fn=None, log=True, logfile='/tmp/pagseguro.log'):
     try:
       prod.append({
         'id':         produtos['ProdID_'+str(i)],
-        'valor':      str_to_float(produtos['ProdValor_'+str(i)]),
+        'valor':      str_to_decimal(produtos['ProdValor_'+str(i)]),
         'descricao':  produtos['ProdDescricao_'+str(i)],
         'quantidade': int(produtos['ProdQuantidade_'+str(i)]),
-        'extras':     str_to_float(produtos['ProdExtras_'+str(i)]),
-        'frete':      str_to_float(produtos['ProdFrete_'+str(i)]),
+        'extras':     str_to_decimal(produtos['ProdExtras_'+str(i)]),
+        'frete':      str_to_decimal(produtos['ProdFrete_'+str(i)]),
       })
     except:
       break
